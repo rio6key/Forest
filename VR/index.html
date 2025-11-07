@@ -2,13 +2,27 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>360 Image Auto Sound</title>
+    <title>360 Image + Spider Model + Auto Sound</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
     <a-scene>
-      <a-light type="ambient" color="#555"></a-light>
+      <!-- 照明 -->
+      <a-light type="ambient" color="#777"></a-light>
+      <a-light type="directional" color="#fff" position="1 2 2"></a-light>
+
+      <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- 🕷️ クモモデル -->
+      <a-entity 
+        id="spider"
+        gltf-model="spider.glb"
+        position="0 -1.5 -3"
+        rotation="0 180 0"
+        scale="0.8 0.8 0.8"
+        animation="property: rotation; to: 0 540 0; loop: true; dur: 8000; easing: linear;">
+      </a-entity>
 
       <!-- 効果音を鳴らすエンティティ -->
       <a-entity id="sound-player"></a-entity>
@@ -28,10 +42,10 @@
         const soundEntity = document.querySelector('#sound-player');
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
 
-        // 最初は音量0で設定して再生開始
+        // 最初は音量0で再生開始（自動再生対策）
         soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 0;`);
 
-        // 2秒後に音量を上げる（ブラウザが自動再生を許可していれば音が出る）
+        // 2秒後に音量を上げる
         setTimeout(() => {
           try {
             soundEntity.components.sound.pool.children[0].volume = 1.0;
