@@ -8,9 +8,29 @@
   <body>
     <a-scene>
       <a-light type="ambient" color="#555"></a-light>
-
-      
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- 効果音を鳴らすエンティティ -->
+      <a-entity id="sound-player" sound="autoplay: true; loop: false;"></a-entity>
     </a-scene>
+
+    <script>
+      // 効果音フォルダ内のMP3ファイル一覧
+      const soundFiles = [
+        "効果音/hell_gear.mp3",
+        "効果音/男性の悲鳴.mp3",
+        "効果音/風が吹く1.mp3",
+        "効果音/風が吹く2.mp3",
+        "効果音/風が吹く3.mp3",
+        "効果音/風が吹く4.mp3"
+      ];
+
+      // ランダムに1つ選ぶ
+      const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+
+      // A-Frame soundコンポーネントに設定
+      const soundEntity = document.querySelector('#sound-player');
+      soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0;`);
+    </script>
   </body>
 </html>
