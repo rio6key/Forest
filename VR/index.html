@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>360 Image + Spider Model + Auto Sound</title>
+    <title>360 Image + Spider Model + Random Auto Sound</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -24,7 +24,7 @@
         animation="property: rotation; to: 0 540 0; loop: true; dur: 8000; easing: linear;">
       </a-entity>
 
-      <!-- 効果音を鳴らすエンティティ -->
+      <!-- 効果音エンティティ -->
       <a-entity id="sound-player"></a-entity>
     </a-scene>
 
@@ -38,18 +38,30 @@
         "効果音/風が吹く4.mp3"
       ];
 
-      window.addEventListener('load', () => {
-        const soundEntity = document.querySelector('#sound-player');
-        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+      const soundEntity = document.querySelector('#sound-player');
 
-        // 効果音を最初から再生
+      // ランダムな音を再生する関数
+      function playRandomSound() {
+        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
         soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
 
-        // 読み込み後に確実に再生
+        // soundが読み込まれたら再生開始
         soundEntity.addEventListener('sound-loaded', () => {
           soundEntity.components.sound.playSound();
-        });
-      });
+        }, { once: true }); // 重複イベント防止
+      }
+
+      // 一定間隔でランダム再生
+      function startRandomLoop() {
+        playRandomSound();
+
+        setInterval(() => {
+          playRandomSound();
+        }, Math.random() * 7000 + 8000); // 8〜15秒間隔
+      }
+
+      // ページ読み込み時に開始
+      window.addEventListener('load', startRandomLoop);
     </script>
   </body>
 </html>
