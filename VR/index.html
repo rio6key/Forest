@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>360 Image + Spider Model + Random Auto Sound</title>
+    <title>360 Image + Spider Model + Auto Sound</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -24,44 +24,36 @@
         animation="property: rotation; to: 0 540 0; loop: true; dur: 8000; easing: linear;">
       </a-entity>
 
-      <!-- 効果音エンティティ -->
+      <!-- 効果音を鳴らすエンティティ -->
       <a-entity id="sound-player"></a-entity>
     </a-scene>
 
     <script>
       const soundFiles = [
         "効果音/hell_gear.mp3",
-        "効果音/突風が吹く.mp3",
+        "効果音/男性の悲鳴.mp3",
         "効果音/風が吹く1.mp3",
         "効果音/風が吹く2.mp3",
         "効果音/風が吹く3.mp3",
         "効果音/風が吹く4.mp3"
       ];
 
-      const soundEntity = document.querySelector('#sound-player');
-
-      // ランダムな音を再生する関数
-      function playRandomSound() {
+      window.addEventListener('load', () => {
+        const soundEntity = document.querySelector('#sound-player');
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
 
-        // soundが読み込まれたら再生開始
-        soundEntity.addEventListener('sound-loaded', () => {
-          soundEntity.components.sound.playSound();
-        }, { once: true }); // 重複イベント防止
-      }
+        // 最初は音量0で再生開始（自動再生対策）
+        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 0;`);
 
-      // 一定間隔でランダム再生
-      function startRandomLoop() {
-        playRandomSound();
-
-        setInterval(() => {
-          playRandomSound();
-        }, Math.random() * 7000 + 8000); // 8〜15秒間隔
-      }
-
-      // ページ読み込み時に開始
-      window.addEventListener('load', startRandomLoop);
+        // 2秒後に音量を上げる
+        setTimeout(() => {
+          try {
+            soundEntity.components.sound.pool.children[0].volume = 1.0;
+          } catch (e) {
+            console.warn("音量変更に失敗しました:", e);
+          }
+        }, 2000);
+      });
     </script>
   </body>
 </html>
