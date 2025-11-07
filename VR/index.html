@@ -11,11 +11,15 @@
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
       <!-- 効果音を鳴らすエンティティ -->
-      <a-entity id="sound-player" sound="autoplay: true; loop: false;"></a-entity>
+      <a-entity id="sound-player"></a-entity>
+
+      <!-- 再生を促すボタン -->
+      <a-entity position="0 1.6 -3">
+        <a-text value="クリックで音を再生" color="#FFF" align="center"></a-text>
+      </a-entity>
     </a-scene>
 
     <script>
-      // 効果音フォルダ内のMP3ファイル一覧
       const soundFiles = [
         "効果音/hell_gear.mp3",
         "効果音/男性の悲鳴.mp3",
@@ -25,12 +29,17 @@
         "効果音/風が吹く4.mp3"
       ];
 
-      // ランダムに1つ選ぶ
-      const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+      // ページ読み込み完了後に処理
+      window.addEventListener('load', () => {
+        const soundEntity = document.querySelector('#sound-player');
 
-      // A-Frame soundコンポーネントに設定
-      const soundEntity = document.querySelector('#sound-player');
-      soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0;`);
+        // クリック時に再生
+        window.addEventListener('click', () => {
+          const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+          soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0;`);
+          soundEntity.components.sound.playSound();
+        }, { once: true });
+      });
     </script>
   </body>
 </html>
