@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>360 Image Test</title>
+    <title>360 Image Auto Sound</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -12,11 +12,6 @@
 
       <!-- 効果音を鳴らすエンティティ -->
       <a-entity id="sound-player"></a-entity>
-
-      <!-- 再生を促すボタン -->
-      <a-entity position="0 1.6 -3">
-        <a-text value="クリックで音を再生" color="#FFF" align="center"></a-text>
-      </a-entity>
     </a-scene>
 
     <script>
@@ -29,16 +24,21 @@
         "効果音/風が吹く4.mp3"
       ];
 
-      // ページ読み込み完了後に処理
       window.addEventListener('load', () => {
         const soundEntity = document.querySelector('#sound-player');
+        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
 
-        // クリック時に再生
-        window.addEventListener('click', () => {
-          const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-          soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0;`);
-          soundEntity.components.sound.playSound();
-        }, { once: true });
+        // 最初は音量0で設定して再生開始
+        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 0;`);
+
+        // 2秒後に音量を上げる（ブラウザが自動再生を許可していれば音が出る）
+        setTimeout(() => {
+          try {
+            soundEntity.components.sound.pool.children[0].volume = 1.0;
+          } catch (e) {
+            console.warn("音量変更に失敗しました:", e);
+          }
+        }, 2000);
       });
     </script>
   </body>
