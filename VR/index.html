@@ -1,77 +1,67 @@
+<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-    <title>360 Image + Spider Model + Auto Sound</title>
+  <head>
+    <meta charset="utf-8">
     <title>360 Image + Spider Model + Random Auto Sound</title>
-<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-</head>
-<body>
-@@ -20,40 +20,56 @@
-gltf-model="spider.glb"
-position="0 -1.5 -3"
-rotation="0 180 0"
-        scale="0.1 0.1 0.1"
-        scale="0.1 0.1 0.1"
-animation="property: rotation; to: 0 540 0; loop: true; dur: 8000; easing: linear;">
-</a-entity>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- 照明 -->
+      <a-light type="ambient" color="#777"></a-light>
+      <a-light type="directional" color="#fff" position="1 2 2"></a-light>
 
-      <!-- 効果音を鳴らすエンティティ -->
+      <!-- 背景 -->
+      <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- 🕷️ クモモデル -->
+      <a-entity 
+        id="spider"
+        gltf-model="spider.glb"
+        position="0 -1.5 -3"
+        rotation="0 180 0"
+        scale="0.1 0.1 0.1"
+        animation="property: rotation; to: 0 540 0; loop: true; dur: 8000; easing: linear;">
+      </a-entity>
+
       <!-- 効果音エンティティ -->
-<a-entity id="sound-player"></a-entity>
-</a-scene>
+      <a-entity id="sound-player"></a-entity>
+    </a-scene>
 
-<script>
-const soundFiles = [
-"効果音/hell_gear.mp3",
-        "効果音/男性の悲鳴.mp3",
+    <script>
+      const soundFiles = [
+        "効果音/hell_gear.mp3",
         "効果音/突風が吹く.mp3",
-"効果音/風が吹く1.mp3",
-"効果音/風が吹く2.mp3",
-"効果音/風が吹く3.mp3",
-"効果音/風が吹く4.mp3"
-];
+        "効果音/風が吹く1.mp3",
+        "効果音/風が吹く2.mp3",
+        "効果音/風が吹く3.mp3",
+        "効果音/風が吹く4.mp3"
+      ];
 
-      window.addEventListener('load', () => {
-        const soundEntity = document.querySelector('#sound-player');
       const soundEntity = document.querySelector('#sound-player');
 
-      // 音をランダムに再生する関数
-      function playRandomSound(volume = 1.0) {
-const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: ${volume}; loop: false;`);
+      // ランダムな音を再生する関数
+      function playRandomSound() {
+        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
+
+        // soundが読み込まれたら再生開始
         soundEntity.addEventListener('sound-loaded', () => {
           soundEntity.components.sound.playSound();
-        }, { once: true });
+        }, { once: true }); // 重複イベント防止
       }
 
-        // 最初は音量0で再生開始（自動再生対策）
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 0;`);
-      // ランダムに再生を繰り返すループ
+      // 一定間隔でランダム再生
       function startRandomLoop() {
-        playRandomSound(0); // 最初は無音で再生（自動再生対策）
+        playRandomSound();
 
-        // 2秒後に音量を上げる
-        // 1秒後に音量を上げる
-setTimeout(() => {
-try {
-            soundEntity.components.sound.pool.children[0].volume = 1.0;
-            const audio = soundEntity.components.sound.pool.children[0];
-            if (audio) audio.volume = 1.0;
-} catch (e) {
-            console.warn("音量変更に失敗しました:", e);
-            console.warn("音量変更に失敗:", e);
-}
-        }, 2000);
-      });
-        }, 1000);
-
-        // 以降は数秒おきにランダムで再生
         setInterval(() => {
-          playRandomSound(1.0);
+          playRandomSound();
         }, Math.random() * 7000 + 8000); // 8〜15秒間隔
       }
 
+      // ページ読み込み時に開始
       window.addEventListener('load', startRandomLoop);
-</script>
-</body>
+    </script>
+  </body>
 </html>
