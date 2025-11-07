@@ -31,7 +31,7 @@
     <script>
       const soundFiles = [
         "効果音/hell_gear.mp3",
-        "効果音/男性の悲鳴.mp3",
+        "効果音/突風が吹く.mp3",
         "効果音/風が吹く1.mp3",
         "効果音/風が吹く2.mp3",
         "効果音/風が吹く3.mp3",
@@ -42,17 +42,13 @@
         const soundEntity = document.querySelector('#sound-player');
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
 
-        // 最初は音量0で再生開始（自動再生対策）
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 0;`);
+        // 効果音を最初から再生
+        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
 
-        // 2秒後に音量を上げる
-        setTimeout(() => {
-          try {
-            soundEntity.components.sound.pool.children[0].volume = 1.0;
-          } catch (e) {
-            console.warn("音量変更に失敗しました:", e);
-          }
-        }, 2000);
+        // 読み込み後に確実に再生
+        soundEntity.addEventListener('sound-loaded', () => {
+          soundEntity.components.sound.playSound();
+        });
       });
     </script>
   </body>
