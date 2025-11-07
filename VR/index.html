@@ -14,14 +14,14 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 🕷️ クモモデル -->
+      <!-- 🕷️ クモモデル（回転は削除） -->
       <a-entity 
         id="spider"
         gltf-model="spider.glb"
         position="0 -1.5 -3"
         rotation="0 180 0"
-        scale="0.8 0.8 0.8"
-        animation="property: rotation; to: 0 540 0; loop: true; dur: 8000; easing: linear;">
+        scale="0.4 0.4 0.4"
+        animation-mixer>
       </a-entity>
 
       <!-- 効果音エンティティ -->
@@ -29,47 +29,79 @@
     </a-scene>
 
     <script>
+      // --- 必要ならパスを実際の配置に合わせる ---
       const soundFiles = [
-        "効果音/hell_gear.mp3",
-        "効果音/突風が吹く.mp3",
-        "効果音/風が吹く1.mp3",
-        "効果音/風が吹く2.mp3",
-        "効果音/風が吹く3.mp3",
-        "効果音/風が吹く4.mp3"
+        "VR/効果音/hell_gear.mp3",
+        "VR/効果音/突風が吹く.mp3",
+        "VR/効果音/風が吹く1.mp3",
+        "VR/効果音/風が吹く2.mp3",
+        "VR/効果音/風が吹く3.mp3",
+        "VR/効果音/風が吹く4.mp3"
       ];
 
-      const soundEntity = document.querySelector('#sound-player');
+      // DOM（A-Frameエンティティ）読み込み後に処理
+      window.addEventListener('load', () => {
+        const soundEntity = document.querySelector('#sound-player');
+        if (!soundEntity) {
+          console.error("sound-player エンティティが見つかりません。IDを確認してください。");
+          return;
+        }
 
-      // 音をランダムに再生する関数
-      function playRandomSound(volume = 1.0) {
-        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: ${volume}; loop: false;`);
-        soundEntity.addEventListener('sound-loaded', () => {
-          soundEntity.components.sound.playSound();
-        }, { once: true });
-      }
+        // 再生関数
+        function playRandomSound(volume = 1.0) {
+          const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+          console.log("再生:", randomSound, "volume:", volume);
 
-      // ランダムに再生を繰り返すループ
-      function startRandomLoop() {
-        playRandomSound(0); // 最初は無音で再生（自動再生対策）
+          // sound 属性をセット（既存のものを上書き）
+          soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; loop: false; volume: ${volume};`);
 
-        // 1秒後に音量を上げる
+          // 読み込み成功／失敗をログ
+          soundEntity.addEventListener('sound-loaded', function onLoad() {
+            console.log("sound-loaded:", randomSound);
+            // autoplay:true なので通常は再生されるはずだが、安全のため playSound() を呼ぶ
+            try {
+              soundEntity.components.sound.playSound();
+            } catch (e) {
+              console.warn("playSound() の呼び出しでエラー:", e);
+            }
+            soundEntity.removeEventListener('sound-loaded', onLoad);
+          });
+
+          soundEntity.addEventListener('sound-error', function onErr(evt) {
+            console.error("sound-error:", evt);
+            soundEntity.removeEventListener('sound-error', onErr);
+          });
+        }
+
+        // 自動再生対策：最初は無音で再生 → 少しして音量を上げる
+        playRandomSound(0.0); // 無音で最初に読み込み・再生（許可されやすくする）
         setTimeout(() => {
+          // コンポーネント内のAudio要素にアクセスして音量を上げる
           try {
-            const audio = soundEntity.components.sound.pool.children[0];
-            if (audio) audio.volume = 1.0;
+            const audio = soundEntity.components.sound && soundEntity.components.sound.pool && soundEntity.components.sound.pool.children[0];
+            if (audio) {
+              audio.volume = 1.0;
+              console.log("最初の音量を1.0に変更");
+            } else {
+              console.warn("audio要素が見つかりません（まだロード中かも）");
+            }
           } catch (e) {
-            console.warn("音量変更に失敗:", e);
+            console.warn("音量設定で例外:", e);
           }
         }, 1000);
 
-        // 以降は数秒おきにランダムで再生
-        setInterval(() => {
-          playRandomSound(1.0);
-        }, Math.random() * 7000 + 8000); // 8〜15秒間隔
-      }
+        // ランダム間隔で次の再生をスケジューリング
+        function scheduleNext() {
+          const delay = Math.random() * 7000 + 8000; // 8〜15秒
+          setTimeout(() => {
+            playRandomSound(1.0);
+            scheduleNext();
+          }, delay);
+        }
 
-      window.addEventListener('load', startRandomLoop);
+        // 開始（最初の無音再生の後に本格ループを開始）
+        setTimeout(scheduleNext, 1500);
+      });
     </script>
   </body>
 </html>
