@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>360 Image + Spider Model + Random Auto Sound</title>
+    <title>Spider Forward + Fade Out (A-Frame)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -14,14 +14,16 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 🕷️ クモ（左右に揺れながら前進） -->
+      <!-- 🕷️ クモ（A-Frameで前進＆フェードアウト） -->
       <a-entity
+        id="spider"
         gltf-model="spider.glb"
         animation-mixer
         position="0 -1.5 -3"
         scale="0.2 0.2 0.2"
-        animation__forward="property: position; to: 0 -1.5 5; dur: 20000; easing: linear; loop: false;"
-        animation__side="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0.5 -1.5 -3;">
+        material="transparent: true; opacity: 1"
+        animation__move="property: position; to: 0 -1.5 5; dur: 8000; easing: linear; loop: false;"
+        animation__fade="property: material.opacity; to: 0; dur: 2000; delay: 6000; easing: easeInOutQuad;">
       </a-entity>
 
       <!-- 効果音エンティティ -->
@@ -40,7 +42,6 @@
 
       const soundEntity = document.querySelector('#sound-player');
 
-      // ランダムな音を再生する関数
       function playRandomSound() {
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
         soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
@@ -50,7 +51,6 @@
         }, { once: true });
       }
 
-      // 一定間隔でランダム再生
       function startRandomLoop() {
         playRandomSound();
         setInterval(() => {
