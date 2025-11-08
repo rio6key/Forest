@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Spider Forward then Fade Out</title>
+    <title>Spider Forward then Fade Out (fixed)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -14,14 +14,13 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 🕷️ クモ（前進→止まって→フェードアウト） -->
+      <!-- 🕷️ クモ -->
       <a-entity
         id="spider"
         gltf-model="spider.glb"
         animation-mixer
         position="0 -1.5 -3"
         scale="0.2 0.2 0.2"
-        material="transparent: true; opacity: 1"
         animation__move="property: position; to: 0 -1.5 5; dur: 8000; easing: linear; loop: false;">
       </a-entity>
 
@@ -30,7 +29,40 @@
     </a-scene>
 
     <script>
-      // 🎵 効果音関連
+      // 🕷️ モデル読み込み後に全メッシュを透明対応にする
+      const spider = document.querySelector('#spider');
+      spider.addEventListener('model-loaded', () => {
+        spider.object3D.traverse(node => {
+          if (node.isMesh) {
+            node.material.transparent = true; // フェード可能にする
+          }
+        });
+      });
+
+      // 🕷️ 前進完了後にフェードアウト
+      spider.addEventListener('animationcomplete__move', () => {
+        let opacity = 1.0;
+        const fadeDuration = 2000; // 2秒で消える
+        const fadeSteps = 20;
+        const stepTime = fadeDuration / fadeSteps;
+
+        const fadeInterval = setInterval(() => {
+          opacity -= 1 / fadeSteps;
+          if (opacity <= 0) {
+            opacity = 0;
+            clearInterval(fadeInterval);
+            spider.parentNode.removeChild(spider); // DOMから削除して完全に消す
+          }
+
+          spider.object3D.traverse(node => {
+            if (node.isMesh && node.material) {
+              node.material.opacity = opacity;
+            }
+          });
+        }, stepTime);
+      });
+
+      // 🎵 効果音処理（元のまま）
       const soundFiles = [
         "効果音/hell_gear.mp3",
         "効果音/突風が吹く.mp3",
@@ -39,6 +71,7 @@
         "効果音/風が吹く3.mp3",
         "効果音/風が吹く4.mp3"
       ];
+
       const soundEntity = document.querySelector('#sound-player');
 
       function playRandomSound() {
@@ -57,20 +90,6 @@
       }
 
       window.addEventListener('load', startRandomLoop);
-
-      // 🕷️ フェードアウト制御
-      const spider = document.querySelector('#spider');
-
-      // 前進アニメーションが終わったらフェード開始
-      spider.addEventListener('animationcomplete__move', () => {
-        spider.setAttribute('animation__fade', {
-          property: 'material.opacity',
-          to: 0,
-          dur: 2000, // フェード時間（2秒）
-          easing: 'easeInOutQuad',
-          loop: false
-        });
-      });
     </script>
   </body>
 </html>
