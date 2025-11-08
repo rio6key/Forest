@@ -14,7 +14,7 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 🕷️ クモ（A-Frameで前進＆フェードアウト） -->
+      <!-- 🕷️ クモ（A-Frameで前進＋5秒後フェードアウト） -->
       <a-entity
         id="spider"
         gltf-model="spider.glb"
@@ -23,7 +23,7 @@
         scale="0.2 0.2 0.2"
         material="transparent: true; opacity: 1"
         animation__move="property: position; to: 0 -1.5 5; dur: 8000; easing: linear; loop: false;"
-        animation__fade="property: material.opacity; to: 0; dur: 2000; delay: 6000; easing: easeInOutQuad;">
+        animation__fade="property: material.opacity; to: 0; dur: 2000; delay: 5000; easing: easeInOutQuad;">
       </a-entity>
 
       <!-- 効果音エンティティ -->
@@ -45,7 +45,6 @@
       function playRandomSound() {
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
         soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
-
         soundEntity.addEventListener('sound-loaded', () => {
           soundEntity.components.sound.playSound();
         }, { once: true });
