@@ -14,14 +14,15 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-<a-entity
-  gltf-model="spider.glb"
-  animation-mixer
-  position="0 -1.5 -3"
-  scale="0.2 0.2 0.2">
-</a-entity>
-
-
+      <!-- 🕷️ クモ（左右に揺れながら前進） -->
+      <a-entity
+        gltf-model="spider.glb"
+        animation-mixer
+        position="0 -1.5 -3"
+        scale="0.2 0.2 0.2"
+        animation__forward="property: position; to: 0 -1.5 5; dur: 20000; easing: linear; loop: false;"
+        animation__side="property: position; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true; to: 0.5 -1.5 -3;">
+      </a-entity>
 
       <!-- 効果音エンティティ -->
       <a-entity id="sound-player"></a-entity>
@@ -44,22 +45,19 @@
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
         soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
 
-        // soundが読み込まれたら再生開始
         soundEntity.addEventListener('sound-loaded', () => {
           soundEntity.components.sound.playSound();
-        }, { once: true }); // 重複イベント防止
+        }, { once: true });
       }
 
       // 一定間隔でランダム再生
       function startRandomLoop() {
         playRandomSound();
-
         setInterval(() => {
           playRandomSound();
-        }, Math.random() * 7000 + 8000); // 8〜15秒間隔
+        }, Math.random() * 7000 + 8000);
       }
 
-      // ページ読み込み時に開始
       window.addEventListener('load', startRandomLoop);
     </script>
   </body>
