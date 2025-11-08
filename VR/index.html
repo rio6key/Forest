@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Spiders Move + Fade Out (中距離から登場)</title>
+    <title>Spiders Move + Fade Out (低めに配置)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -27,20 +27,21 @@
         spider.setAttribute('gltf-model', 'spider.glb');
         spider.setAttribute('animation-mixer', '');
 
-        // 🎲 ランダム設定（ちょっと奥から登場）
-        const startX = (Math.random() - 0.5) * 8;   // -4〜4の範囲でばらける
-        const startZ = -6 - Math.random() * 4;      // -6〜-10：やや奥から登場
+        // 🎲 ランダム設定（低めの位置から登場）
+        const startX = (Math.random() - 0.5) * 8;   // -4〜4の範囲
+        const startZ = -6 - Math.random() * 4;      // -6〜-10：少し奥から登場
+        const yPos = -2.0;                          // 👈 クモの高さを少し下げた
         const scale = Math.random() > 0.5 ? '0.2 0.2 0.2' : '0.1 0.1 0.1';
-        const moveDistance = 7 + Math.random() * 3; // 7〜10前進
-        const moveDuration = 7000 + Math.random() * 3000; // 7〜10秒で前進
+        const moveDistance = 7 + Math.random() * 3; // 前進距離
+        const moveDuration = 7000 + Math.random() * 3000; // 移動時間
 
-        spider.setAttribute('position', `${startX} -1.5 ${startZ}`);
+        spider.setAttribute('position', `${startX} ${yPos} ${startZ}`);
         spider.setAttribute('scale', scale);
 
         // 🚶‍♂️ 前進アニメーション
         spider.setAttribute('animation__move', `
           property: position;
-          to: ${startX} -1.5 ${startZ + moveDistance};
+          to: ${startX} ${yPos} ${startZ + moveDistance};
           dur: ${moveDuration};
           easing: linear;
           loop: false;
