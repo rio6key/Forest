@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Random Spiders Move + Fade Out (遠くから登場)</title>
+    <title>Spiders Move + Fade Out (中距離から登場)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -14,7 +14,7 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 効果音用 -->
+      <!-- 効果音 -->
       <a-entity id="sound-player"></a-entity>
     </a-scene>
 
@@ -27,12 +27,12 @@
         spider.setAttribute('gltf-model', 'spider.glb');
         spider.setAttribute('animation-mixer', '');
 
-        // 🎲 ランダム設定（遠くから登場）
-        const startX = (Math.random() - 0.5) * 8;     // -4〜4の範囲
-        const startZ = -10 - Math.random() * 5;       // -10〜-15（遠く）
+        // 🎲 ランダム設定（ちょっと奥から登場）
+        const startX = (Math.random() - 0.5) * 8;   // -4〜4の範囲でばらける
+        const startZ = -6 - Math.random() * 4;      // -6〜-10：やや奥から登場
         const scale = Math.random() > 0.5 ? '0.2 0.2 0.2' : '0.1 0.1 0.1';
-        const moveDistance = 10 + Math.random() * 3;  // 前進距離（少し長め）
-        const moveDuration = 8000 + Math.random() * 4000; // 移動時間
+        const moveDistance = 7 + Math.random() * 3; // 7〜10前進
+        const moveDuration = 7000 + Math.random() * 3000; // 7〜10秒で前進
 
         spider.setAttribute('position', `${startX} -1.5 ${startZ}`);
         spider.setAttribute('scale', scale);
