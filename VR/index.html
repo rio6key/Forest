@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Random Spiders Move + Fade Out</title>
+    <title>Random Spiders Move + Fade Out (遠くから登場)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -20,8 +20,6 @@
 
     <script>
       const scene = document.querySelector('a-scene');
-
-      // 🕷️ クモを10匹ランダム生成
       const numSpiders = 10;
 
       for (let i = 0; i < numSpiders; i++) {
@@ -29,15 +27,17 @@
         spider.setAttribute('gltf-model', 'spider.glb');
         spider.setAttribute('animation-mixer', '');
 
-        // 🎲 ランダムな位置・スケール・進行距離を設定
-        const startX = (Math.random() - 0.5) * 8;   // -4〜4の範囲で横にばらける
-        const startZ = -3 - Math.random() * 3;      // 手前〜奥にランダム配置
+        // 🎲 ランダム設定（遠くから登場）
+        const startX = (Math.random() - 0.5) * 8;     // -4〜4の範囲
+        const startZ = -10 - Math.random() * 5;       // -10〜-15（遠く）
         const scale = Math.random() > 0.5 ? '0.2 0.2 0.2' : '0.1 0.1 0.1';
-        const moveDistance = 6 + Math.random() * 3; // 前進距離を少し変化
-        const moveDuration = 6000 + Math.random() * 4000; // 移動時間もランダム
+        const moveDistance = 10 + Math.random() * 3;  // 前進距離（少し長め）
+        const moveDuration = 8000 + Math.random() * 4000; // 移動時間
 
         spider.setAttribute('position', `${startX} -1.5 ${startZ}`);
         spider.setAttribute('scale', scale);
+
+        // 🚶‍♂️ 前進アニメーション
         spider.setAttribute('animation__move', `
           property: position;
           to: ${startX} -1.5 ${startZ + moveDistance};
@@ -48,12 +48,10 @@
 
         scene.appendChild(spider);
 
-        // 🕷️ モデル読み込み後に透明化対応
+        // 透明化対応
         spider.addEventListener('model-loaded', () => {
           spider.object3D.traverse(node => {
-            if (node.isMesh) {
-              node.material.transparent = true;
-            }
+            if (node.isMesh) node.material.transparent = true;
           });
         });
 
@@ -71,11 +69,8 @@
               clearInterval(fadeInterval);
               spider.parentNode.removeChild(spider);
             }
-
             spider.object3D.traverse(node => {
-              if (node.isMesh && node.material) {
-                node.material.opacity = opacity;
-              }
+              if (node.isMesh && node.material) node.material.opacity = opacity;
             });
           }, stepTime);
         });
@@ -92,7 +87,6 @@
       ];
 
       const soundEntity = document.querySelector('#sound-player');
-
       function playRandomSound() {
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
         soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
