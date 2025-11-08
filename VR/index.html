@@ -20,7 +20,7 @@
 
     <script>
       const scene = document.querySelector('a-scene');
-      const numSpiders = 10;
+      const numSpiders = 15;
 
       for (let i = 0; i < numSpiders; i++) {
         const spider = document.createElement('a-entity');
@@ -30,7 +30,7 @@
         // 🎲 ランダム設定（低めの位置から登場）
         const startX = (Math.random() - 0.5) * 8;   // -4〜4の範囲
         const startZ = -6 - Math.random() * 4;      // -6〜-10：少し奥から登場
-        const yPos = -2.0;                          // 👈 クモの高さを少し下げた
+        const yPos = -2.5;                          // 👈 クモの高さを少し下げた
         const scale = Math.random() > 0.5 ? '0.2 0.2 0.2' : '0.1 0.1 0.1';
         const moveDistance = 7 + Math.random() * 3; // 前進距離
         const moveDuration = 7000 + Math.random() * 3000; // 移動時間
