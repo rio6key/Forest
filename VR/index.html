@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Spider Forward then Fade Out (fixed)</title>
+    <title>Random Spiders Move + Fade Out</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -14,55 +14,74 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 🕷️ クモ -->
-      <a-entity
-        id="spider"
-        gltf-model="spider.glb"
-        animation-mixer
-        position="0 -1.5 -3"
-        scale="0.2 0.2 0.2"
-        animation__move="property: position; to: 0 -1.5 5; dur: 8000; easing: linear; loop: false;">
-      </a-entity>
-
-      <!-- 効果音エンティティ -->
+      <!-- 効果音用 -->
       <a-entity id="sound-player"></a-entity>
     </a-scene>
 
     <script>
-      // 🕷️ モデル読み込み後に全メッシュを透明対応にする
-      const spider = document.querySelector('#spider');
-      spider.addEventListener('model-loaded', () => {
-        spider.object3D.traverse(node => {
-          if (node.isMesh) {
-            node.material.transparent = true; // フェード可能にする
-          }
-        });
-      });
+      const scene = document.querySelector('a-scene');
 
-      // 🕷️ 前進完了後にフェードアウト
-      spider.addEventListener('animationcomplete__move', () => {
-        let opacity = 1.0;
-        const fadeDuration = 2000; // 2秒で消える
-        const fadeSteps = 20;
-        const stepTime = fadeDuration / fadeSteps;
+      // 🕷️ クモを10匹ランダム生成
+      const numSpiders = 10;
 
-        const fadeInterval = setInterval(() => {
-          opacity -= 1 / fadeSteps;
-          if (opacity <= 0) {
-            opacity = 0;
-            clearInterval(fadeInterval);
-            spider.parentNode.removeChild(spider); // DOMから削除して完全に消す
-          }
+      for (let i = 0; i < numSpiders; i++) {
+        const spider = document.createElement('a-entity');
+        spider.setAttribute('gltf-model', 'spider.glb');
+        spider.setAttribute('animation-mixer', '');
 
+        // 🎲 ランダムな位置・スケール・進行距離を設定
+        const startX = (Math.random() - 0.5) * 8;   // -4〜4の範囲で横にばらける
+        const startZ = -3 - Math.random() * 3;      // 手前〜奥にランダム配置
+        const scale = Math.random() > 0.5 ? '0.2 0.2 0.2' : '0.1 0.1 0.1';
+        const moveDistance = 6 + Math.random() * 3; // 前進距離を少し変化
+        const moveDuration = 6000 + Math.random() * 4000; // 移動時間もランダム
+
+        spider.setAttribute('position', `${startX} -1.5 ${startZ}`);
+        spider.setAttribute('scale', scale);
+        spider.setAttribute('animation__move', `
+          property: position;
+          to: ${startX} -1.5 ${startZ + moveDistance};
+          dur: ${moveDuration};
+          easing: linear;
+          loop: false;
+        `);
+
+        scene.appendChild(spider);
+
+        // 🕷️ モデル読み込み後に透明化対応
+        spider.addEventListener('model-loaded', () => {
           spider.object3D.traverse(node => {
-            if (node.isMesh && node.material) {
-              node.material.opacity = opacity;
+            if (node.isMesh) {
+              node.material.transparent = true;
             }
           });
-        }, stepTime);
-      });
+        });
 
-      // 🎵 効果音処理（元のまま）
+        // 🕷️ 前進完了後フェードアウト
+        spider.addEventListener('animationcomplete__move', () => {
+          let opacity = 1.0;
+          const fadeDuration = 2000;
+          const fadeSteps = 20;
+          const stepTime = fadeDuration / fadeSteps;
+
+          const fadeInterval = setInterval(() => {
+            opacity -= 1 / fadeSteps;
+            if (opacity <= 0) {
+              opacity = 0;
+              clearInterval(fadeInterval);
+              spider.parentNode.removeChild(spider);
+            }
+
+            spider.object3D.traverse(node => {
+              if (node.isMesh && node.material) {
+                node.material.opacity = opacity;
+              }
+            });
+          }, stepTime);
+        });
+      }
+
+      // 🎵 ランダム効果音ループ
       const soundFiles = [
         "効果音/hell_gear.mp3",
         "効果音/突風が吹く.mp3",
