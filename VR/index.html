@@ -2,20 +2,91 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>360 Image Test</title>
+    <title>Kaijyu + Single Spider (No Animation)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
     <a-scene>
-      <!-- 環境光の明るさを少し下げる（intensityで調整） -->
-      <a-light type="ambient" color="#222" intensity="0.2"></a-light>
+      <!-- 照明 -->
+      <a-light type="ambient" color="#666"></a-light>
+      <a-light type="directional" color="#fff" position="2 4 3"></a-light>
 
-
-      <!-- 視点の高さを低く設定（positionのy値を小さく） -->
-      <a-entity camera look-controls position="0 1.2 0"></a-entity>
-
-      <!-- 空の画像（360°画像） -->
+      <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- 効果音 -->
+      <a-entity id="sound-player"></a-entity>
+
+      <!-- カメラ（少し下げた位置） -->
+      <a-entity id="cameraRig" position="0 -1 5">
+        <a-camera look-controls></a-camera>
+      </a-entity>
+
+      <!-- 怪獣モデル -->
+      <a-assets>
+        <a-asset-item id="kaijyu-asset" src="kaijyu.glb"></a-asset-item>
+        <a-asset-item id="spider-asset" src="spider.glb"></a-asset-item>
+      </a-assets>
+
+      <a-entity
+        id="kaijyu"
+        gltf-model="#kaijyu-asset"
+        position="0 -2.5 -10"
+        rotation="0 0 0"
+        scale="0.5 0.5 0.5"
+        animation-mixer
+        animation__move="property: position; to: 0 -2.5 5; dur: 25000; easing: linear; loop: false;"
+      ></a-entity>
+
+      <!-- 🕷️ クモ（1匹だけ・アニメーションなし） -->
+      <a-entity
+        id="spider"
+        gltf-model="#spider-asset"
+        position="1 -2.5 -6"
+        scale="0.2 0.2 0.2"
+        rotation="0 30 0"
+      ></a-entity>
     </a-scene>
+
+    <script>
+      // 🦖 怪獣ロード後：色を暗めに & アニメーション再生
+      const kaijyu = document.querySelector('#kaijyu');
+      kaijyu.addEventListener('model-loaded', () => {
+        kaijyu.object3D.traverse(node => {
+          if (node.isMesh && node.material) {
+            node.material.color.multiplyScalar(0.6);
+          }
+        });
+        kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
+      });
+
+      // 🎵 ランダム効果音ループ
+      const soundFiles = [
+        "効果音/hell_gear.mp3",
+        "効果音/突風が吹く.mp3",
+        "効果音/風が吹く1.mp3",
+        "効果音/風が吹く2.mp3",
+        "効果音/風が吹く3.mp3",
+        "効果音/風が吹く4.mp3"
+      ];
+
+      const soundEntity = document.querySelector('#sound-player');
+      function playRandomSound() {
+        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
+        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
+        soundEntity.addEventListener('sound-loaded', () => {
+          soundEntity.components.sound.playSound();
+        }, { once: true });
+      }
+
+      function startRandomLoop() {
+        playRandomSound();
+        setInterval(() => {
+          playRandomSound();
+        }, Math.random() * 7000 + 8000);
+      }
+
+      window.addEventListener('load', startRandomLoop);
+    </script>
   </body>
 </html>
