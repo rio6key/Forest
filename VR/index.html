@@ -7,9 +7,13 @@
   </head>
   <body>
     <a-scene>
-      <a-light type="ambient" color="#555"></a-light>
+      <!-- 環境光の明るさを少し下げる（intensityで調整） -->
+      <a-light type="ambient" color="#444" intensity="0.5"></a-light>
 
-      
+      <!-- 視点の高さを低く設定（positionのy値を小さく） -->
+      <a-entity camera look-controls position="0 1.2 0"></a-entity>
+
+      <!-- 空の画像（360°画像） -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
     </a-scene>
   </body>
