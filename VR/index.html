@@ -14,7 +14,7 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 効果音 -->
+      <!-- 効果音再生用 -->
       <a-entity id="sound-player"></a-entity>
 
       <!-- カメラ -->
@@ -38,7 +38,6 @@
         animation__move="property: position; to: 0 -2.5 5; dur: 25000; easing: linear; loop: false;"
       ></a-entity>
 
-      <!-- 🕷️ クモ -->
       <a-entity
         id="spider"
         gltf-model="#spider-asset"
@@ -49,7 +48,7 @@
     </a-scene>
 
     <script>
-      // 🦖 モデル読み込み後に少し暗く
+      // 🦖 モデル読み込み後の処理
       const kaijyu = document.querySelector('#kaijyu');
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
@@ -57,46 +56,48 @@
         });
         kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
       });
-<script>
-  const soundFiles = [
-    "効果音/hell_gear.mp3",
-    "効果音/susume.mp3",
-    "効果音/突風が吹く.mp3",
-    "効果音/風が吹く1.mp3",
-    "効果音/風が吹く2.mp3"
-  ];
 
-  const soundEntity = document.querySelector('#sound-player');
-  let currentIndex = 0;
+      // 🎵 効果音の再生管理
+      const soundFiles = [
+        "効果音/hell_gear.mp3",
+        "効果音/susume.mp3",
+        "効果音/突風が吹く.mp3",
+        "効果音/風が吹く1.mp3",
+        "効果音/風が吹く2.mp3"
+      ];
 
-  function playNextSound() {
-    const file = soundFiles[currentIndex];
-    soundEntity.setAttribute('sound', {
-      src: `url(${file})`,
-      autoplay: true,
-      volume: 1.0,
-      loop: false
-    });
+      const soundEntity = document.querySelector('#sound-player');
+      let currentIndex = 0;
 
-    console.log("🎵 再生中:", file);
+      function playNextSound() {
+        const file = soundFiles[currentIndex];
 
-    // 次の音へ（最後まで行ったら最初に戻る）
-    currentIndex = (currentIndex + 1) % soundFiles.length;
-  }
+        // 一度sound属性を削除してから新しく設定
+        soundEntity.removeAttribute('sound');
+        soundEntity.setAttribute('sound', {
+          src: `url(${file})`,
+          autoplay: true,
+          volume: 1.0,
+          loop: false
+        });
 
-  function startSequentialLoop() {
-    playNextSound();
-    setInterval(() => {
-      playNextSound();
-    }, 10000); // 次の音を10秒間隔で再生（音の長さに合わせて調整）
-  }
+        console.log("🎵 再生中:", file);
 
-  // 初回クリックで音再生開始
-  window.addEventListener('click', () => {
-    startSequentialLoop();
-    console.log("🎧 効果音の順番ループ開始");
-  }, { once: true });
-</script>
+        currentIndex = (currentIndex + 1) % soundFiles.length;
+      }
 
+      function startSequentialLoop() {
+        playNextSound();
+        setInterval(() => {
+          playNextSound();
+        }, 10000); // 10秒ごとに切り替え
+      }
+
+      // 初回クリックで音再生開始
+      window.addEventListener('click', () => {
+        startSequentialLoop();
+        console.log("🎧 効果音ループ開始");
+      }, { once: true });
+    </script>
   </body>
 </html>
