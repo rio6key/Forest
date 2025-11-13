@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu + Spider Scare</title>
+    <title>Kaijyu + Spider Scare (Adjusted)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -48,13 +48,13 @@
         rotation="0 180 0"
         animation__approach="property: position; to: 0 -0.8 2; dur: 3000; easing: linear; startEvents: scare;"
         animation__return="property: position; to: 1 -1 14; dur: 3000; easing: linear; startEvents: scare_return;"
-        animation__scale="property: scale; to: 3 3 3; dur: 3000; easing: linear; startEvents: scare;"
+        animation__scale="property: scale; to: 2.5 2.5 2.5; dur: 3000; easing: linear; startEvents: scare;"
         animation__scale_return="property: scale; to: 1.5 1.5 1.5; dur: 3000; easing: linear; startEvents: scare_return;"
       ></a-entity>
     </a-scene>
 
     <script>
-      // 怪獣読み込み後の暗め調整
+      // 怪獣を少し暗めに表示
       const kaijyu = document.querySelector('#kaijyu');
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
@@ -90,12 +90,12 @@
       const spider = document.querySelector('#spider');
       window.addEventListener('click', () => {
         spider.emit('scare'); // 蜘蛛が迫る
-        playRandomSound();    // 脅かし効果音再生
+        playRandomSound();    // 効果音再生
 
-        // 少し待って元の位置に戻す
+        // approach後に元の位置に戻す
         setTimeout(() => {
           spider.emit('scare_return');
-        }, 3000 + 500); // approachのduration + 少し余裕
+        }, 3000 + 500); // duration + 少し余裕
       });
     </script>
   </body>
