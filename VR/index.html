@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu Jump Scare</title>
+    <title>Kaijyu Jump Scare Auto</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -28,7 +28,7 @@
         <a-asset-item id="spider-asset" src="spider.glb"></a-asset-item>
       </a-assets>
 
-      <!-- 🦖 怪獣（初期は遠くに配置） -->
+      <!-- 🦖 怪獣 -->
       <a-entity
         id="kaijyu"
         gltf-model="#kaijyu-asset"
@@ -57,7 +57,7 @@
         });
       });
 
-      const roarSound = "効果音/hell_gear.mp3"; 
+      const roarSound = "効果音/hell_gear.mp3";
       const ambientSounds = [
         "効果音/風が吹く1.mp3",
         "効果音/風が吹く2.mp3",
@@ -105,20 +105,12 @@
         console.log("💥 怪獣ジャンプスケア発動！");
       }
 
-      // 初回クリックまたはコントローラのトリガーで演出開始
-      function startJumpScare() {
+      // ページロード6秒後に自動で演出
+      window.addEventListener('load', () => {
         startAmbientLoop();
         setTimeout(() => {
           triggerKaijyuJumpScare();
-        }, 2000);
-      }
-
-      window.addEventListener('click', startJumpScare, { once: true });
-
-      // VRコントローラ対応 (Oculus, Questなど)
-      window.addEventListener('controllerconnected', evt => {
-        const controllerEl = evt.detail.component.el;
-        controllerEl.addEventListener('triggerdown', startJumpScare, { once: true });
+        }, 6000);
       });
     </script>
   </body>
