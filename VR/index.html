@@ -2,17 +2,17 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu + Single Spider (Dark Scene)</title>
+    <title>Kaijyu + Spider (Dark Night Scene)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
-  <body>
+  <body style="background-color: black;">
     <a-scene>
-      <!-- 🔦 照明（暗めに調整） -->
-      <a-light type="ambient" color="#333"></a-light>
-      <a-light type="directional" color="#888" intensity="0.6" position="2 4 3"></a-light>
+      <!-- 🔦 照明（かなり暗く） -->
+      <a-light type="ambient" color="#111"></a-light>
+      <a-light type="directional" color="#555" intensity="0.3" position="2 4 3"></a-light>
 
-      <!-- 🌌 背景（少し暗めの森） -->
-      <a-sky src="mori.jpg" rotation="0 -130 0" color="#222"></a-sky>
+      <!-- 🌌 背景（夜の森に見えるように暗色指定） -->
+      <a-sky src="mori.jpg" rotation="0 -130 0" color="#111"></a-sky>
 
       <!-- 効果音 -->
       <a-entity id="sound-player"></a-entity>
@@ -49,12 +49,12 @@
     </a-scene>
 
     <script>
-      // 🦖 怪獣ロード後：色を暗めに調整 & アニメーション再生
+      // 🦖 怪獣ロード後：暗闇用にマテリアルをさらに暗く
       const kaijyu = document.querySelector('#kaijyu');
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
           if (node.isMesh && node.material) {
-            node.material.color.multiplyScalar(0.4); // さらに暗め
+            node.material.color.multiplyScalar(0.25); // かなり暗め
           }
         });
         kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
@@ -73,7 +73,7 @@
       const soundEntity = document.querySelector('#sound-player');
       function playRandomSound() {
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
+        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 0.9; loop: false;`);
         soundEntity.addEventListener('sound-loaded', () => {
           soundEntity.components.sound.playSound();
         }, { once: true });
