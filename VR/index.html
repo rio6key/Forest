@@ -8,8 +8,8 @@
   <body>
     <a-scene>
       <!-- 照明 -->
-      <a-light type="ambient" color="#666"></a-light>
-      <a-light type="directional" color="#fff" position="2 4 3"></a-light>
+      <a-light type="ambient" color="#333"></a-light>
+      <a-light type="directional" color="#999" position="2 4 3"></a-light>
 
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
@@ -17,12 +17,12 @@
       <!-- 効果音 -->
       <a-entity id="sound-player"></a-entity>
 
-      <!-- カメラ（少し下げた位置） -->
+      <!-- カメラ -->
       <a-entity id="cameraRig" position="0 -1 5">
         <a-camera look-controls></a-camera>
       </a-entity>
 
-      <!-- 怪獣モデル -->
+      <!-- モデル -->
       <a-assets>
         <a-asset-item id="kaijyu-asset" src="kaijyu.glb"></a-asset-item>
         <a-asset-item id="spider-asset" src="spider.glb"></a-asset-item>
@@ -38,26 +38,22 @@
         animation__move="property: position; to: 0 -2.5 5; dur: 25000; easing: linear; loop: false;"
       ></a-entity>
 
-      <!-- 🕷️ クモ（1匹だけ・アニメーションなし） -->
-      <!-- 🕷️ クモ（1匹だけ・アニメーションなし） -->
-<a-entity
-  id="spider"
-  gltf-model="#spider-asset"
-  position="1 -3 18"
-  scale="1.5 1.5 1.5"
-  rotation="0 180 0"
-></a-entity>
-
+      <!-- 🕷️ クモ -->
+      <a-entity
+        id="spider"
+        gltf-model="#spider-asset"
+        position="1 -3 2"
+        scale="1.5 1.5 1.5"
+        rotation="0 180 0"
+      ></a-entity>
     </a-scene>
 
     <script>
-      // 🦖 怪獣ロード後：色を暗めに & アニメーション再生
+      // 🦖 モデル読み込み後に少し暗く
       const kaijyu = document.querySelector('#kaijyu');
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
-          if (node.isMesh && node.material) {
-            node.material.color.multiplyScalar(0.6);
-          }
+          if (node.isMesh && node.material) node.material.color.multiplyScalar(0.6);
         });
         kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
       });
@@ -69,17 +65,20 @@
         "効果音/風が吹く1.mp3",
         "効果音/風が吹く2.mp3",
         "効果音/風が吹く3.mp3",
-        "効果音/風が吹く4.mp3"
+        "効果音/風が吹く4.mp3",
         "効果音/susume.mp3"
       ];
 
       const soundEntity = document.querySelector('#sound-player');
+
       function playRandomSound() {
         const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        soundEntity.setAttribute('sound', `src: url(${randomSound}); autoplay: true; volume: 1.0; loop: false;`);
-        soundEntity.addEventListener('sound-loaded', () => {
-          soundEntity.components.sound.playSound();
-        }, { once: true });
+        soundEntity.setAttribute('sound', {
+          src: `url(${randomSound})`,
+          autoplay: true,
+          volume: 1.0,
+          loop: false
+        });
       }
 
       function startRandomLoop() {
@@ -89,7 +88,11 @@
         }, Math.random() * 7000 + 8000);
       }
 
-      window.addEventListener('load', startRandomLoop);
+      // ▶️ 初回クリックで音再生許可＆開始
+      window.addEventListener('click', () => {
+        startRandomLoop();
+        console.log("🎧 効果音ループ開始");
+      }, { once: true });
     </script>
   </body>
 </html>
