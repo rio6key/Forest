@@ -2,15 +2,17 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu + Spider (Dark Night Scene)</title>
+    <title>Kaijyu + Spider (Moonlight Night Scene)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body style="background-color: black;">
     <a-scene>
-   
-      
-      <!-- 🌌 背景（夜の森に見えるように暗色指定） -->
-      <a-sky src="mori.jpg" rotation="0 -130 0" color="#111"></a-sky>
+      <!-- 💡 月明かりのように少し青みを加えた照明 -->
+      <a-light type="ambient" color="#222244" intensity="0.7"></a-light>
+      <a-light type="directional" color="#88aaff" intensity="0.8" position="2 4 3"></a-light>
+
+      <!-- 🌌 背景（森画像を少し見えるように） -->
+      <a-sky src="mori.jpg" rotation="0 -130 0" color="#222"></a-sky>
 
       <!-- 効果音 -->
       <a-entity id="sound-player"></a-entity>
@@ -47,12 +49,12 @@
     </a-scene>
 
     <script>
-      // 🦖 怪獣ロード後：暗闇用にマテリアルをさらに暗く
+      // 🦖 怪獣ロード後：少し暗め（真っ黒ではない）
       const kaijyu = document.querySelector('#kaijyu');
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
           if (node.isMesh && node.material) {
-            node.material.color.multiplyScalar(0.25); // かなり暗め
+            node.material.color.multiplyScalar(0.5); // 少し暗い程度
           }
         });
         kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
