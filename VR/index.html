@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu Jump Scare Random Direction</title>
+    <title>Kaijyu Jump Scare Auto</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -54,7 +53,9 @@
 
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
-          if (node.isMesh && node.material) node.material.color.multiplyScalar(0.7);
+          if (node.isMesh && node.material) {
+            node.material.color.multiplyScalar(0.7);
+          }
         });
       });
 
@@ -75,6 +76,7 @@
           volume: volume,
           loop: false
         });
+        console.log("🎵 再生:", file);
       }
 
       function startAmbientLoop() {
@@ -87,21 +89,11 @@
       }
 
       function triggerKaijyuJumpScare() {
-        // ランダム方向生成（円周上に配置）
-        const radius = 20; // カメラからの距離
-        const angle = Math.random() * Math.PI * 2; // 0〜360度ランダム
-        const x = Math.sin(angle) * radius;
-        const z = Math.cos(angle) * radius;
-
-        kaijyu.setAttribute("position", `${x} -2 ${z}`);
-        kaijyu.setAttribute("rotation", `0 ${-angle * (180/Math.PI)} 0`);
         kaijyu.setAttribute("visible", "true");
-
-        // 急接近
         kaijyu.setAttribute("animation__jump", {
           property: "position",
-          from: `${x} -2 ${z}`,
-          to: `0 -2 -2`,
+          from: "0 -2.5 -20",
+          to: "0 -2.5 -2",
           dur: 300,
           easing: "easeOutQuad"
         });
@@ -111,8 +103,8 @@
           to: "3 3 3",
           dur: 300
         });
-
         playSound(roarSound, 1.2);
+        console.log("💥 怪獣ジャンプスケア発動！");
       }
 
       // ページロード6秒後に自動で演出
