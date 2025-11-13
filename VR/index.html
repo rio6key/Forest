@@ -49,16 +49,15 @@
     </a-scene>
 
     <script>
-      // 🦖 モデル読み込み後に少し暗く
       const kaijyu = document.querySelector('#kaijyu');
+
       kaijyu.addEventListener('model-loaded', () => {
         kaijyu.object3D.traverse(node => {
           if (node.isMesh && node.material) node.material.color.multiplyScalar(0.7);
         });
       });
 
-      // 🎵 効果音
-      const roarSound = "効果音/hell_gear.mp3"; // 咆哮など派手な音に変更可
+      const roarSound = "効果音/hell_gear.mp3"; 
       const ambientSounds = [
         "効果音/風が吹く1.mp3",
         "効果音/風が吹く2.mp3",
@@ -78,48 +77,49 @@
         console.log("🎵 再生:", file);
       }
 
-      // 🌲 背景音を定期再生
       function startAmbientLoop() {
         let i = 0;
-        playSound(ambientSounds[i]);
+        playSound(ambientSounds[i], 0.6);
         setInterval(() => {
           i = (i + 1) % ambientSounds.length;
           playSound(ambientSounds[i], 0.6);
         }, 10000);
       }
 
-      // 💥 驚かせ演出
       function triggerKaijyuJumpScare() {
         kaijyu.setAttribute("visible", "true");
         kaijyu.setAttribute("animation__jump", {
           property: "position",
           from: "0 -2.5 -20",
-          to: "0 -2.5 -2",  // かなり近くまで瞬間移動
+          to: "0 -2.5 -2",
           dur: 300,
           easing: "easeOutQuad"
         });
-
-        // 同時にスケールアップ（迫力演出）
         kaijyu.setAttribute("animation__scale", {
           property: "scale",
           from: "1.5 1.5 1.5",
           to: "3 3 3",
           dur: 300
         });
-
         playSound(roarSound, 1.2);
         console.log("💥 怪獣ジャンプスケア発動！");
       }
 
-      // 初回クリックで演出開始
-      window.addEventListener('click', () => {
+      // 初回クリックまたはコントローラのトリガーで演出開始
+      function startJumpScare() {
         startAmbientLoop();
-
-        // 少し遅れて怪獣が突然出現（2秒後）
         setTimeout(() => {
           triggerKaijyuJumpScare();
         }, 2000);
-      }, { once: true });
+      }
+
+      window.addEventListener('click', startJumpScare, { once: true });
+
+      // VRコントローラ対応 (Oculus, Questなど)
+      window.addEventListener('controllerconnected', evt => {
+        const controllerEl = evt.detail.component.el;
+        controllerEl.addEventListener('triggerdown', startJumpScare, { once: true });
+      });
     </script>
   </body>
 </html>
