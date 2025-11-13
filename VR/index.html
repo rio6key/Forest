@@ -57,41 +57,46 @@
         });
         kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
       });
+<script>
+  const soundFiles = [
+    "効果音/hell_gear.mp3",
+    "効果音/susume.mp3",
+    "効果音/突風が吹く.mp3",
+    "効果音/風が吹く1.mp3",
+    "効果音/風が吹く2.mp3"
+  ];
 
-      // 🎵 ランダム効果音ループ
-      const soundFiles = [
-        "効果音/hell_gear.mp3",
-        "効果音/susume.mp3",
-        "効果音/突風が吹く.mp3",
-        "効果音/風が吹く1.mp3",
-        "効果音/風が吹く2.mp3",
-        
-      ];
+  const soundEntity = document.querySelector('#sound-player');
+  let currentIndex = 0;
 
-      const soundEntity = document.querySelector('#sound-player');
+  function playNextSound() {
+    const file = soundFiles[currentIndex];
+    soundEntity.setAttribute('sound', {
+      src: `url(${file})`,
+      autoplay: true,
+      volume: 1.0,
+      loop: false
+    });
 
-      function playRandomSound() {
-        const randomSound = soundFiles[Math.floor(Math.random() * soundFiles.length)];
-        soundEntity.setAttribute('sound', {
-          src: `url(${randomSound})`,
-          autoplay: true,
-          volume: 1.0,
-          loop: false
-        });
-      }
+    console.log("🎵 再生中:", file);
 
-      function startRandomLoop() {
-        playRandomSound();
-        setInterval(() => {
-          playRandomSound();
-        }, Math.random() * 7000 + 8000);
-      }
+    // 次の音へ（最後まで行ったら最初に戻る）
+    currentIndex = (currentIndex + 1) % soundFiles.length;
+  }
 
-      // ▶️ 初回クリックで音再生許可＆開始
-      window.addEventListener('click', () => {
-        startRandomLoop();
-        console.log("🎧 効果音ループ開始");
-      }, { once: true });
-    </script>
+  function startSequentialLoop() {
+    playNextSound();
+    setInterval(() => {
+      playNextSound();
+    }, 10000); // 次の音を10秒間隔で再生（音の長さに合わせて調整）
+  }
+
+  // 初回クリックで音再生開始
+  window.addEventListener('click', () => {
+    startSequentialLoop();
+    console.log("🎧 効果音の順番ループ開始");
+  }, { once: true });
+</script>
+
   </body>
 </html>
