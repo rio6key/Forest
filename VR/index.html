@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Spiders + Kaijyu Move</title>
+    <title>Spiders + Kaijyu Move + Animation</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
     <a-scene>
       <!-- 照明 -->
-      <a-light type="ambient" color="#777"></a-light>
-      <a-light type="directional" color="#fff" position="1 2 2"></a-light>
+      <a-light type="ambient" color="#666"></a-light>
+      <a-light type="directional" color="#fff" position="2 4 3"></a-light>
 
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
@@ -46,9 +46,9 @@
           spider.setAttribute('gltf-model', 'spider.glb');
           spider.setAttribute('animation-mixer', '');
 
-          // 🎲 ランダム設定（低めの位置から登場）
-          const startX = (Math.random() - 0.5) * 8;   // -4〜4
-          const startZ = -6 - Math.random() * 4;      // -6〜-10
+          // 🎲 ランダム設定
+          const startX = (Math.random() - 0.5) * 8;
+          const startZ = -6 - Math.random() * 4;
           const yPos = -2.5;
           const scale = Math.random() > 0.5 ? '0.2 0.2 0.2' : '0.1 0.1 0.1';
           const moveDistance = 7 + Math.random() * 3;
@@ -57,7 +57,6 @@
           spider.setAttribute('position', `${startX} ${yPos} ${startZ}`);
           spider.setAttribute('scale', scale);
 
-          // 🚶‍♂️ 前進アニメーション
           spider.setAttribute('animation__move', `
             property: position;
             to: ${startX} ${yPos} ${startZ + moveDistance};
@@ -68,14 +67,14 @@
 
           scene.appendChild(spider);
 
-          // 透明化対応
+          // クモ透明化
           spider.addEventListener('model-loaded', () => {
             spider.object3D.traverse(node => {
               if (node.isMesh) node.material.transparent = true;
             });
           });
 
-          // 🕷️ 前進完了後フェードアウト
+          // フェードアウト処理
           spider.addEventListener('animationcomplete__move', () => {
             let opacity = 1.0;
             const fadeDuration = 2000;
@@ -95,7 +94,18 @@
             }, stepTime);
           });
         }
-      }, 3000); // ← 3秒後に生成
+      }, 3000);
+
+      // 🦖 怪獣ロード後：色を暗めに
+      const kaijyu = document.querySelector('#kaijyu');
+      kaijyu.addEventListener('model-loaded', () => {
+        kaijyu.object3D.traverse(node => {
+          if (node.isMesh && node.material) {
+            // 全体の明るさを少し落とす
+            node.material.color.multiplyScalar(0.6);
+          }
+        });
+      });
 
       // 🎵 ランダム効果音ループ
       const soundFiles = [
