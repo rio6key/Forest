@@ -16,22 +16,16 @@
 
       <!-- 効果音 -->
       <a-entity id="sound-player"></a-entity>
+       <a-asset-item id="kaijyu" src="kaijyu.glb"></a-asset-item>
 
       <!-- 🦖 怪獣モデル -->
+
       <a-entity
-        id="kaijyu"
-        gltf-model="kaijyu.glb"
-        position="0 -2.5 -10"
+        gltf-model="#kaijyu"
+         position="0 -2.5 -10"
         rotation="0 0 0"
-        scale="2.5 2.5 2.5"
+        scale="1.5 1.5 1.5"
         animation-mixer
-        animation__move="
-          property: position;
-          to: 0 -2.5 5;
-          dur: 25000;
-          easing: linear;
-          loop: false;
-        "
       ></a-entity>
     </a-scene>
 
