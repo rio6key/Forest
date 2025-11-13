@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu + Single Spider (No Animation)</title>
+    <title>Kaijyu + Single Spider (Scare)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -26,6 +26,7 @@
       <a-assets>
         <a-asset-item id="kaijyu-asset" src="kaijyu.glb"></a-asset-item>
         <a-asset-item id="spider-asset" src="spider.glb"></a-asset-item>
+        <audio id="spider-sound" src="効果音/spider_scare.mp3"></audio>
       </a-assets>
 
       <a-entity
@@ -38,12 +39,15 @@
         animation__move="property: position; to: 0 -2.5 5; dur: 25000; easing: linear; loop: false;"
       ></a-entity>
 
+      <!-- 🕷️ クモ -->
       <a-entity
         id="spider"
         gltf-model="#spider-asset"
         position="1 -3 14"
         scale="1.5 1.5 1.5"
         rotation="0 180 0"
+        animation__approach="property: position; to: 0 -2.5 5; dur: 5000; easing: linear; startEvents: scare;"
+        animation__scale="property: scale; to: 3 3 3; dur: 5000; easing: linear; startEvents: scare;"
       ></a-entity>
     </a-scene>
 
@@ -57,7 +61,7 @@
         kaijyu.setAttribute('animation-mixer', 'clip: Walk; loop: repeat;');
       });
 
-      // 🎵 効果音の再生管理
+      // 🎵 通常効果音の順番再生
       const soundFiles = [
         "効果音/hell_gear.mp3",
         "効果音/susume.mp3",
@@ -71,8 +75,6 @@
 
       function playNextSound() {
         const file = soundFiles[currentIndex];
-
-        // 一度sound属性を削除してから新しく設定
         soundEntity.removeAttribute('sound');
         soundEntity.setAttribute('sound', {
           src: `url(${file})`,
@@ -80,9 +82,6 @@
           volume: 1.0,
           loop: false
         });
-
-        console.log("🎵 再生中:", file);
-
         currentIndex = (currentIndex + 1) % soundFiles.length;
       }
 
@@ -90,13 +89,21 @@
         playNextSound();
         setInterval(() => {
           playNextSound();
-        }, 10000); // 10秒ごとに切り替え
+        }, 10000);
       }
 
-      // 初回クリックで音再生開始
+      // ▶️ 初回クリックで音再生＆蜘蛛の脅かし開始
       window.addEventListener('click', () => {
         startSequentialLoop();
         console.log("🎧 効果音ループ開始");
+
+        // 蜘蛛を脅かす動作
+        const spider = document.querySelector('#spider');
+        spider.emit('scare');
+
+        // 脅かし効果音
+        const scareSound = document.querySelector('#spider-sound');
+        scareSound.play();
       }, { once: true });
     </script>
   </body>
