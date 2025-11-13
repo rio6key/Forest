@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Kaijyu Jump Scare (Simple)</title>
+    <title>Kaijyu Random Appear Scare</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   </head>
   <body>
@@ -14,7 +14,7 @@
       <!-- 背景 -->
       <a-sky src="mori.jpg" rotation="0 -130 0"></a-sky>
 
-      <!-- 効果音再生用 -->
+      <!-- 効果音 -->
       <a-entity id="sound-player"></a-entity>
 
       <!-- カメラ -->
@@ -25,37 +25,12 @@
       <!-- モデル -->
       <a-assets>
         <a-asset-item id="kaijyu-asset" src="kaijyu.glb"></a-asset-item>
-        <a-asset-item id="spider-asset" src="spider.glb"></a-asset-item>
       </a-assets>
-
-      <!-- 🦖 怪獣（初期は遠く・非表示） -->
-      <a-entity
-        id="kaijyu"
-        gltf-model="#kaijyu-asset"
-        position="0 -2.5 -20"
-        rotation="0 0 0"
-        scale="1.5 1.5 1.5"
-        visible="false">
-      </a-entity>
-
-      <!-- 🕷️ 蜘蛛 -->
-      <a-entity
-        id="spider"
-        gltf-model="#spider-asset"
-        position="1 -3 14"
-        scale="1.5 1.5 1.5"
-        rotation="0 180 0">
-      </a-entity>
     </a-scene>
 
     <script>
-      // 🦖 怪獣を少し暗めに
-      const kaijyu = document.querySelector('#kaijyu');
-      kaijyu.addEventListener('model-loaded', () => {
-        kaijyu.object3D.traverse(node => {
-          if (node.isMesh && node.material) node.material.color.multiplyScalar(0.7);
-        });
-      });
+      const scene = document.querySelector('a-scene');
+      const soundEntity = document.querySelector('#sound-player');
 
       // 🎵 効果音
       const roarSound = "効果音/hell_gear.mp3";
@@ -65,8 +40,7 @@
         "効果音/突風が吹く.mp3"
       ];
 
-      const soundEntity = document.querySelector('#sound-player');
-
+      // 効果音を再生する関数
       function playSound(file, volume = 1.0) {
         soundEntity.removeAttribute('sound');
         soundEntity.setAttribute('sound', {
@@ -75,10 +49,9 @@
           volume: volume,
           loop: false
         });
-        console.log("🎵 再生:", file);
       }
 
-      // 🌲 背景音をループ再生
+      // 🌲 背景音をループ
       function startAmbientLoop() {
         let i = 0;
         playSound(ambientSounds[i]);
@@ -88,27 +61,64 @@
         }, 10000);
       }
 
-      // 💥 驚かせ演出（ただ出現するだけ）
-      function triggerKaijyuJumpScare() {
-        kaijyu.setAttribute("visible", "true");
-        kaijyu.setAttribute("animation__jump", {
-          property: "position",
-          from: "0 -2.5 -20",
-          to: "0 -2.5 -3",   // 目の前に出現（数値を大きくすると遠く）
-          dur: 200,          // 一瞬で出る
-          easing: "easeOutQuad"
+      // 🦖 ランダムな怪獣を生成して出現→消滅
+      function spawnKaijyu() {
+        // 最大4体制限
+        const currentKaijyus = document.querySelectorAll('.kaijyu');
+        if (currentKaijyus.length >= 4) return;
+
+        // ランダム位置を決定（プレイヤーの前方10〜20mの範囲）
+        const randomX = (Math.random() - 0.5) * 20; // -10〜10
+        const randomZ = - (Math.random() * 15 + 8); // -8〜-23
+        const randomY = -2.5;
+
+        // 怪獣エンティティ生成
+        const kaijyu = document.createElement('a-entity');
+        kaijyu.setAttribute('gltf-model', '#kaijyu-asset');
+        kaijyu.setAttribute('position', `${randomX} ${randomY} ${randomZ}`);
+        kaijyu.setAttribute('scale', '1.5 1.5 1.5');
+        kaijyu.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+        kaijyu.classList.add('kaijyu');
+        kaijyu.setAttribute('visible', 'false');
+
+        // モデルが読み込まれたら明るさ調整
+        kaijyu.addEventListener('model-loaded', () => {
+          kaijyu.object3D.traverse(node => {
+            if (node.isMesh && node.material) node.material.color.multiplyScalar(0.7);
+          });
         });
 
-        playSound(roarSound, 1.2);
-        console.log("💥 怪獣出現！");
+        scene.appendChild(kaijyu);
+
+        // 少し遅れて出現（びっくり感アップ）
+        setTimeout(() => {
+          kaijyu.setAttribute('visible', 'true');
+          playSound(roarSound, 1.0);
+        }, 200);
+
+        // 5秒後に消す
+        setTimeout(() => {
+          kaijyu.setAttribute('visible', 'false');
+          scene.removeChild(kaijyu);
+        }, 5000);
       }
 
-      // 初回クリックで再生開始
+      // 🔁 ランダム間隔で出現を繰り返す
+      function startKaijyuLoop() {
+        setInterval(() => {
+          // 1〜2体ランダム出現
+          const spawnCount = Math.floor(Math.random() * 2) + 1;
+          for (let i = 0; i < spawnCount; i++) {
+            setTimeout(spawnKaijyu, Math.random() * 2000); // 少しズラして出現
+          }
+        }, 8000); // 8秒ごとに新しい出現イベント
+      }
+
+      // ▶ 初回クリックで開始
       window.addEventListener('click', () => {
         startAmbientLoop();
-        setTimeout(() => {
-          triggerKaijyuJumpScare();
-        }, 2000); // 2秒後に出現
+        startKaijyuLoop();
+        console.log("💥 ランダム怪獣出現ループ開始");
       }, { once: true });
     </script>
   </body>
