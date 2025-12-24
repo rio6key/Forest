@@ -50,15 +50,6 @@
     </a-scene>
 
     <script>
-      const kaijyu = document.querySelector('#kaijyu');
-
-      kaijyu.addEventListener('model-loaded', () => {
-        kaijyu.object3D.traverse(node => {
-          if (node.isMesh && node.material) {
-            node.material.color.multiplyScalar(0.7);
-          }
-        });
-      });
 
       const roarSound = "効果音/hell_gear.mp3";
       const ambientSounds = [
