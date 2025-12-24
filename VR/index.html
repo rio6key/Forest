@@ -29,7 +29,7 @@
         <a-asset-item id="spider-asset" src="spider.glb"></a-asset-item>
       </a-assets>
 
-      <!-- 🦖 怪獣 -->
+      <!-- 怪獣 -->
       <a-entity
         id="kaijyu"
         gltf-model="#kaijyu-asset"
@@ -39,7 +39,7 @@
         visible="false"
       ></a-entity>
 
-      <!-- 🕷️ 蜘蛛 -->
+      <!-- 蜘蛛 -->
       <a-entity
         id="spider"
         gltf-model="#spider-asset"
@@ -77,8 +77,6 @@
           volume: volume,
           loop: false
         });
-
-        console.log("🎵 再生:", file);
       }
 
       function startAmbientLoop() {
@@ -110,7 +108,6 @@
         });
 
         playSound(roarSound, 1.2);
-        console.log("💥 怪獣ジャンプスケア発動！");
       }
 
       // ページロード6秒後に自動で演出
